@@ -1,4 +1,4 @@
-const noteRoutes = require('./twitter_search_routes.js');
+const searchRoutes = require('./twitter_search_routes.js');
 module.exports = function(app, db) {
-	noteRoutes(app, db);
+	searchRoutes(app, db);
 }
