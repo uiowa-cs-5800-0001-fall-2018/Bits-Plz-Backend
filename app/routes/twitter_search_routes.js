@@ -1,4 +1,3 @@
-
 module.exports = function(app, db) {
 	var twitter_key;
 	if (app.settings.env == 'development') {
@@ -21,6 +20,5 @@ module.exports = function(app, db) {
 			res.send(tweets);
 		});
 		console.log(req.body);
-		// res.send('hello');
 	});
 };
