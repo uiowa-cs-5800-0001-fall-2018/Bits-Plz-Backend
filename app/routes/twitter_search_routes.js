@@ -25,7 +25,8 @@ module.exports = function(app, db) {
 				(tweet, call_back) => {
 					let hash_tags = [];
 					for (var hashtag_json in tweet.entities.hashtags)
-						hash_tags.push(hashtag_json.text);
+						if (hashtag_json.text !== null)
+							hash_tags.push(hashtag_json.text);
 					let tweet_simplified = {
 						titles: hash_tags,
 						region: tweet.user.location === '' ? null : tweet.user.location,
