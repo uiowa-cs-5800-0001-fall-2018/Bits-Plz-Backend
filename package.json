@@ -10,10 +10,12 @@
   "author": "Rentian Dong",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "mongodb": "^2.2.16",
+    "sentiment": "^5.0.1",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
