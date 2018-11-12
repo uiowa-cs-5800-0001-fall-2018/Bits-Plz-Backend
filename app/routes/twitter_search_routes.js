@@ -18,7 +18,7 @@ module.exports = function(app, db) {
 	let async = require('async');
 
     app.post('/search', (req, res) => {
-		client.get('search/tweets', {q: 'trump'}, function(error, tweets, response) {
+		client.get('search/tweets', {q: 'trump', count: 1000}, function(error, tweets, response) {
    			let parsed_tweets = [];
    			async.forEach(
    				tweets.statuses,
