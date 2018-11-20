@@ -13,4 +13,11 @@ require('./app/routes')(app, {});
 app.listen(port, () => {
     console.log('We are live on ' + port);
 	console.log('Environment: ' + app.settings.env);
+
+	var CronJob = require('cron').CronJob;
+	new CronJob('0 * * * * *', () => {
+  		console.log('message');
+	}, null, true, 'America/Chicago').start();
 });
+
+
