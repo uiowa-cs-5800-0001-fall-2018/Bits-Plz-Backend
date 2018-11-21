@@ -1,36 +1,14 @@
-module.exports = function(app, db) {
-    let twitter_key;
-    if (app.settings.env == 'development') {
-        twitter_key = require('../key.js');
-    }
-    else {
-        twitter_key = {
-            consumer_key: process.env.consumer_key,
-            consumer_secret: process.env.consumer_secret,
-            access_token_key: process.env.access_token_key,
-            access_token_secret: process.env.access_token_secret
-        }
-    }
-    let Twitter = require('twitter');
-    let client = new Twitter(twitter_key);
-    let Sentiment = require('sentiment');
-    let sentiment = new Sentiment();
-    let async = require('async');
-    const search = require('../search');
+const search = require('../search');
+const analyze = require('../semantic_analysis');
 
+module.exports = function(app, db) {
     app.post('/search', (req, res) => {
-    	let arr = []
-    	search('trump', 10).subscribe({
-			next: tweet => {
-                console.log(tweet);
-            	arr.push(tweet);
-			},
+    	let arr = [];
+    	analyze(search('trump', 10)).subscribe({
+			next: tweet => arr.push(tweet),
 			error: err => console.log(err),
-			complete: () => {
-				console.log('completed');
-				res.send(arr);
-            }
-		})
+			complete: () => res.send(arr)
+		});
 
 	// 	client.get('search/tweets', {q: 'trump', count: 1000}, function(error, tweets, response) {
    	// 		let parsed_tweets = [];
