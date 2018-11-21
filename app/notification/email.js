@@ -13,7 +13,7 @@ function send_mail(to, subject, text) {
         to: to,
         subject: subject,
         text: text
-    }, function(error,info){
+    }, function (error,info) {
         if (error) console.log(error);
         else console.log('Email sent: ' + info.response)
     });
