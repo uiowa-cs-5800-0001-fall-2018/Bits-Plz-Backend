@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 
 let twitter_key;
-if (app.settings.env == 'development') {
+if (app.settings.env === 'development') {
     twitter_key = require('./key.js');
 }
 else {
@@ -18,7 +18,6 @@ else {
 let Twitter = require('twitter');
 let client = new Twitter(twitter_key);
 let async = require('async');
-
 
 function search_tweets(key_word, count) {
     return Observable.Observable.create((observer) => {
@@ -41,10 +40,7 @@ function search_tweets(key_word, count) {
                 },
                 err => {
                     if (err) console.log("an error occurred: ", err);
-                    else {
-                        console.log("processsing finished without any error");
-                        observer.complete();
-                    }
+                    else observer.complete();
                 }
             );
         });
