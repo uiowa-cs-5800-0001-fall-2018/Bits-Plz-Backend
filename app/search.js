@@ -4,7 +4,7 @@ const app = express();
 
 let twitter_key;
 if (app.settings.env === 'development') {
-    twitter_key = require('./key.js');
+    twitter_key = require('./keys/twitter_api_key.js');
 }
 else {
     twitter_key = {
