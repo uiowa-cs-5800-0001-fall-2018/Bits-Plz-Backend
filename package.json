@@ -10,7 +10,8 @@
   "author": "Rentian Dong",
   "license": "ISC",
   "engines": {
-    "node": "^8.12.0"
+    "node": "^8.12.0",
+    "npm": "^6.4.1"
   },
   "dependencies": {
     "async": "^2.6.1",
