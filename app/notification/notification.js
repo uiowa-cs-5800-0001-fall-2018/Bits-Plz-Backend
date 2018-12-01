@@ -1,9 +1,14 @@
 const CronJob = require('cron').CronJob;
+const fire_app = require('firebase');
+const firebase_api_key = require('../keys/firebase_api_key.json');
+const db = fire_app.initializeApp(firebase_api_key).database();
 // they are used in eval(), which is not properly recognized
 // noinspection JSUnusedLocalSymbols
 const search_tweets = require('../search');
 // noinspection JSUnusedLocalSymbols
 const send_email = require('./email');
+const analyze = require('../semantic_analysis');
+const simple_classification = require('../result_display');
 
 const INTERVALS = {
     secondly: '* * * * * *',
@@ -17,16 +22,23 @@ const INTERVALS = {
 function start_auto_notifications() {
     for (const interval in INTERVALS) {
         new CronJob(INTERVALS[interval], () => {
-            eval(`
-                let arr = [];
-                search_tweets('trump', 10).subscribe({
-                    next: tweet => arr.push(tweet),
-                    error: err => console.log(err),
-                    complete: () => console.log('complete')
+            db.ref(`/auto_notifications/${interval}`).once('value').then(snapshot => {
+                let values = snapshot.val();
+                let tweets = search_tweets(values.keywords, values.count);
+                simple_classification(analyze(tweets)).subscribe({
+                    next: val => {
+                        let content = `
+                            here is your latest update!
+                            positive: ${val.positive}
+                            negative: ${val.negative}
+                            neutural: ${val.negative}
+                        `;
+                        send_email(values.email, 'update!', content);
+                    },
+                    error: err => { console.log(err) },
+                    complete: () => { console.log('complete') }
                 });
-                send_email('r2dong@yahoo.com,', 'using eval to search and send mail', 'it works!');
-            `);
-            console.log('after eval');
+            });
         }, null, true, 'America/Chicago').start()
     }
 }
