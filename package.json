@@ -9,8 +9,10 @@
   },
   "author": "Rentian Dong",
   "license": "ISC",
+  "engines": {
+    "node": "^8.12.0"
+  },
   "dependencies": {
-    "node": "^8.12.0",
     "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
