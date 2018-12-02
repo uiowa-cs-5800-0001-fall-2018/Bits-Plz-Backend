@@ -15,7 +15,7 @@ app.listen(port, () => {
     console.log('We are live on ' + port);
 	console.log('Environment: ' + app.settings.env);
 
-	// start_auto_notifications();
+	start_auto_notifications();
 });
 
 module.exports = app;

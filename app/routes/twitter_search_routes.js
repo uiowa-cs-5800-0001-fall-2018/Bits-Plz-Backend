@@ -5,7 +5,7 @@ module.exports = function(app, db) {
     app.post('/search', (req, res) => {
         const keyword = req.query.keyword;
         const count = req.query.count;
-        if (!keyword || !count || ! ) {
+        if (!keyword || !count) {
             res.send({
                 'titles': ['in valid post request URL'],
                 'region': 'Asgard',

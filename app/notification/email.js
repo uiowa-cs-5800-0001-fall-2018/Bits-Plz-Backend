@@ -2,14 +2,14 @@ const node_mailer = require('nodemailer');
 const transporter = node_mailer.createTransport({
     service: 'yahoo',
     auth: {
-        user: 'bitz.please@yahoo.com',
+        user: 'bitz_please@yahoo.com',
         pass: 'alekseygurtovoy'
     }
 });
 
 function send_mail(to, subject, text) {
     transporter.sendMail({
-        from: 'bitz.please@yahoo.com',
+        from: 'bitz_please@yahoo.com',
         to: to,
         subject: subject,
         text: text
