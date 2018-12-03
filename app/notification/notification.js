@@ -15,11 +15,22 @@ const INTERVALS = {
     monthly: '1 1 1 1 * 1'
 };
 
+function sanity_check() {
+    for (const interval in INTERVALS) {
+        db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
+            snapshot.forEach(node => {
+                console.log(interval, node.key);
+            });
+        });
+    }
+}
+
 function start_auto_notifications() {
     for (const interval in INTERVALS) {
         new CronJob(INTERVALS[interval], () => {
             db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
                 snapshot.forEach(node => {
+                    console.log(interval, node.key);
                     let tweets = search_tweets(node.val().keyword, node.val().count);
                     simple_classification(analyze(tweets)).subscribe({
                         next: val => {
@@ -35,10 +46,12 @@ function start_auto_notifications() {
                         complete: () => { console.log('complete') }
                     });
                 });
-
             });
         }, null, true, 'America/Chicago').start()
     }
 }
 
-module.exports = start_auto_notifications;
+module.exports = {
+    start_auto_notifications: start_auto_notifications,
+    sanity_check: sanity_check
+};
