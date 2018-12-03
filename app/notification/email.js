@@ -15,7 +15,7 @@ function send_mail(to, subject, text) {
         text: text
     }, function (error, info) {
         if (error) console.log(error);
-        else console.log('Email sent: ' + info.response)
+        else console.log(`Email sent to ${to}, ${info.response}`)
     });
 }
 

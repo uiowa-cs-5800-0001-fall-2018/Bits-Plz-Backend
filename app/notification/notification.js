@@ -1,7 +1,5 @@
 const CronJob = require('cron').CronJob;
-const fire_app = require('firebase');
-const firebase_api_key = require('../keys/firebase_api_key.json');
-const db = fire_app.initializeApp(firebase_api_key).database();
+const db = require('../../db/firebase');
 // they are used in eval(), which is not properly recognized
 // noinspection JSUnusedLocalSymbols
 const search_tweets = require('../search');
@@ -11,28 +9,33 @@ const analyze = require('../semantic_analysis');
 const simple_classification = require('../result_display');
 
 const INTERVALS = {
-    minutely: '1 * * * * *',
     hourly: '1 1 * * * *',
     daily: '1 1 1 * * *',
     weekly: '1 1 1 * * 1',
     monthly: '1 1 1 1 * 1'
 };
 
-function start_auto_notifications() {
+function sanity_check() {
     for (const interval in INTERVALS) {
-        new CronJob(INTERVALS[interval], () => {
-            db.ref(`/auto_notifications/${interval}`).once('value').then(snapshot => {
-                let values = snapshot.val();
-                let tweets = search_tweets(values.keywords, values.count);
-                simple_classification(analyze(tweets)).subscribe({
-                    next: val => {
-                        let tweets = "";
-                        for(let i = 0; i < val.tweets.length; i++)
-                        {
-                            tweets += "\n" + val.tweets[i].content + "\n" + "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+        db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
+            snapshot.forEach(node => {
+                console.log(interval, node.key);
+            });
+        });
+    }
+}
 
-                        }
-                        let content = `
+function notify(keyword, count, email) {
+    let tweets = search_tweets(keyword, count);
+    simple_classification(analyze(tweets)).subscribe({
+        next: val => {
+            let tweets = "";
+            for(let i = 0; i < val.tweets.length; i++)
+            {
+                tweets += "\n" + val.tweets[i].content + "\n" + "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+
+            }
+            let content = `
                             
 Hello! Here is your Sentiment Analysis report on: ${values.keywords}\n
                             
@@ -47,14 +50,27 @@ Best Regards,
 Bits-Plz
                             
                         `;
-                        send_email(values.email, ` Sentiment Analysis Keyword: ${values.keywords} Count: ${values.count} tweets`, content);
-                    },
-                    error: err => { console.log(err) },
-                    complete: () => { console.log('complete') }
+            send_email(email, 'update!', content);
+        },
+        error: err => { console.log(err) },
+        complete: () => { console.log('complete') }
+    });
+}
+
+function start_auto_notifications() {
+    for (const interval in INTERVALS) {
+        new CronJob(INTERVALS[interval], () => {
+            db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
+                snapshot.forEach(node => {
+                    notify(node.val().keyword, node.val().count, node.val().email);
                 });
             });
         }, null, true, 'America/Chicago').start()
     }
 }
 
-module.exports = start_auto_notifications;
+module.exports = {
+    start_auto_notifications: start_auto_notifications,
+    sanity_check: sanity_check,
+    notify: notify
+};
