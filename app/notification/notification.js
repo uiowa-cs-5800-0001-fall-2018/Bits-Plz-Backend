@@ -25,7 +25,7 @@ function sanity_check() {
     }
 }
 
-function notify(keyword, count) {
+function notify(keyword, count, email) {
     let tweets = search_tweets(keyword, count);
     simple_classification(analyze(tweets)).subscribe({
         next: val => {
@@ -34,7 +34,7 @@ function notify(keyword, count) {
                             positive: ${val.positive}
                             negative: ${val.negative}
                             neutural: ${val.negative}`;
-            send_email(values.email, 'update!', content);
+            send_email(email, 'update!', content);
         },
         error: err => { console.log(err) },
         complete: () => { console.log('complete') }
@@ -46,7 +46,7 @@ function start_auto_notifications() {
         new CronJob(INTERVALS[interval], () => {
             db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
                 snapshot.forEach(node => {
-                    notify(node.val().keyword, node.val().count);
+                    notify(node.val().keyword, node.val().count, node.val().email);
                 });
             });
         }, null, true, 'America/Chicago').start()
@@ -55,5 +55,6 @@ function start_auto_notifications() {
 
 module.exports = {
     start_auto_notifications: start_auto_notifications,
-    sanity_check: sanity_check
+    sanity_check: sanity_check,
+    notify: notify
 };
