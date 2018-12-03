@@ -25,7 +25,7 @@ app.listen(port, () => {
 		} else {
 			console.log('auto notifications are not enabled');
 		}
-	}).then()
+	}).then();
 });
 
 module.exports = app;
