@@ -1,7 +1,5 @@
 const CronJob = require('cron').CronJob;
-const fire_app = require('firebase');
-const firebase_api_key = require('../keys/firebase_api_key.json');
-const db = fire_app.initializeApp(firebase_api_key).database();
+const db = require('../../db/firebase');
 // they are used in eval(), which is not properly recognized
 // noinspection JSUnusedLocalSymbols
 const search_tweets = require('../search');
