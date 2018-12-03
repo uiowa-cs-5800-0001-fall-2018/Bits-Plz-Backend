@@ -25,26 +25,28 @@ function sanity_check() {
     }
 }
 
+function notify(keyword, count) {
+    let tweets = search_tweets(keyword, count);
+    simple_classification(analyze(tweets)).subscribe({
+        next: val => {
+            let content = `
+                            here is your latest update!
+                            positive: ${val.positive}
+                            negative: ${val.negative}
+                            neutural: ${val.negative}`;
+            send_email(values.email, 'update!', content);
+        },
+        error: err => { console.log(err) },
+        complete: () => { console.log('complete') }
+    });
+}
+
 function start_auto_notifications() {
     for (const interval in INTERVALS) {
         new CronJob(INTERVALS[interval], () => {
             db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
                 snapshot.forEach(node => {
-                    console.log(interval, node.key);
-                    let tweets = search_tweets(node.val().keyword, node.val().count);
-                    simple_classification(analyze(tweets)).subscribe({
-                        next: val => {
-                            let content = `
-                            here is your latest update!
-                            positive: ${val.positive}
-                            negative: ${val.negative}
-                            neutural: ${val.negative}
-                        `;
-                            send_email(values.email, 'update!', content);
-                        },
-                        error: err => { console.log(err) },
-                        complete: () => { console.log('complete') }
-                    });
+                    notify(node.val().keyword, node.val().count);
                 });
             });
         }, null, true, 'America/Chicago').start()
