@@ -11,8 +11,6 @@ const analyze = require('../semantic_analysis');
 const simple_classification = require('../result_display');
 
 const INTERVALS = {
-    secondly: '* * * * * *',
-    minutely: '1 * * * * *',
     hourly: '1 1 * * * *',
     daily: '1 1 1 * * *',
     weekly: '1 1 1 * * 1',
@@ -22,22 +20,24 @@ const INTERVALS = {
 function start_auto_notifications() {
     for (const interval in INTERVALS) {
         new CronJob(INTERVALS[interval], () => {
-            db.ref(`/auto_notifications/${interval}`).once('value').then(snapshot => {
-                let values = snapshot.val();
-                let tweets = search_tweets(values.keywords, values.count);
-                simple_classification(analyze(tweets)).subscribe({
-                    next: val => {
-                        let content = `
+            db.ref(`/auto notifications/${interval}`).once('value').then(snapshot => {
+                snapshot.forEach(node => {
+                    let tweets = search_tweets(node.val().keyword, node.val().count);
+                    simple_classification(analyze(tweets)).subscribe({
+                        next: val => {
+                            let content = `
                             here is your latest update!
                             positive: ${val.positive}
                             negative: ${val.negative}
                             neutural: ${val.negative}
                         `;
-                        send_email(values.email, 'update!', content);
-                    },
-                    error: err => { console.log(err) },
-                    complete: () => { console.log('complete') }
+                            send_email(values.email, 'update!', content);
+                        },
+                        error: err => { console.log(err) },
+                        complete: () => { console.log('complete') }
+                    });
                 });
+
             });
         }, null, true, 'America/Chicago').start()
     }
