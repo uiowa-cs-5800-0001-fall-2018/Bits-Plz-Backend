@@ -37,11 +37,11 @@ function notify(keyword, count, email) {
             }
             let content = `
                             
-Hello! Here is your Sentiment Analysis report on: ${values.keywords}\n
+Hello! Here is your Sentiment Analysis report on: ${keyword}\n
                             
-There were ${val.positive} POSITIVE tweets about ${values.keywords}\n
-${val.negative} NEGATIVE tweets about ${values.keywords}\n
-${val.neutural} NEUTRAL tweets about ${values.keywords}.\n
+There were ${val.positive} POSITIVE tweets about ${keyword}\n
+${val.negative} NEGATIVE tweets about ${keyword}\n
+${val.neutural} NEUTRAL tweets about ${keyword}.\n
 Recent Tweets:\n
 ${tweets} 
 Check out our web application to see additional analysis graphs\n
